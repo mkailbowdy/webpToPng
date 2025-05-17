@@ -1,4 +1,4 @@
-module github.com/mkailbowdy/playground
+module github.com/mkailbowdy/webpToPng
 
 go 1.24.1
 
