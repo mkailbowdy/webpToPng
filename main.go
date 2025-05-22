@@ -15,21 +15,23 @@ import (
 )
 
 func main() {
-	mime := flag.String("mime", "jpeg", "MIME type to convert to")
+	m := flag.String("mime", "jpeg", "MIME type to convert to")
 	q := flag.Int("q", 100, "Quality of image")
+	options := jpeg.Options{Quality: *q} // For jpeg encoding
 	flag.Parse()
-	fmt.Printf("Mime type: %s\n", *mime)
-	options := jpeg.Options{Quality: *q}
+
 	// Get directory user's system
 	home, err := os.UserHomeDir()
 	if err != nil {
 		fmt.Println(err)
 		log.Fatal(err)
 	}
-	subdir := os.Args[1:]
+
+	// subdirectory will be the last argument when user runs program on command line
+	subdir := os.Args[len(os.Args)-1]
 	fmt.Printf("subdir path: %s\n", subdir)
 
-	fullPath := filepath.Join(home, subdir[1])
+	fullPath := filepath.Join(home, subdir)
 
 	// Get all webp files in the directory
 	files, err := filepath.Glob(fullPath + "/*.webp")
@@ -39,6 +41,7 @@ func main() {
 	}
 
 	for i, file := range files {
+
 		// Get the current file's name, remove the .webp suffix, and replace with .png
 		name := strings.TrimSuffix(filepath.Base(file), ".webp")
 		img, err := os.Open(file)
@@ -51,13 +54,12 @@ func main() {
 		webpImg, err := webp.Decode(img)
 
 		var newFile *os.File
-		if *mime == "jpeg" {
+		if *m == "jpeg" {
 			log.Printf("jpeg")
 			newFile, err = os.Create(fullPath + "/" + name + strconv.Itoa(i) + ".jpg")
 			err = jpeg.Encode(newFile, webpImg, &options)
 			if err != nil {
 				fmt.Println(err)
-
 				log.Fatal(err)
 			}
 		} else {
@@ -65,7 +67,6 @@ func main() {
 			newFile, err = os.Create(fullPath + "/" + name + strconv.Itoa(i) + ".png")
 			if err != nil {
 				fmt.Println(err)
-
 				log.Fatal(err)
 			}
 
