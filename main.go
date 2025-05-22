@@ -17,8 +17,8 @@ import (
 func main() {
 	m := flag.String("mime", "jpeg", "MIME type to convert to")
 	q := flag.Int("q", 100, "Quality of image")
-	options := jpeg.Options{Quality: *q} // For jpeg encoding
 	flag.Parse()
+	options := jpeg.Options{Quality: *q} // For jpeg encoding
 
 	// Get directory user's system
 	home, err := os.UserHomeDir()
